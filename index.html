@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7C8770">
+<title>BookSprout — английские книги для детей</title>
+<meta name="description" content="Английские детские книги, которые ребёнок просит перечитать. Кураторство по науке о раннем развитии. Астана.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --limewash:#F1ECE0; --cream:#FBF8F1; --sage:#7C8770; --sage-deep:#5C6651;
+  --clay:#C08A6E; --ink:#3A3631; --line:rgba(58,54,49,.12);
+  --serif:'Fraunces',serif; --sans:'Jost',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-weight:400}
+body{max-width:760px;margin:0 auto;padding-bottom:76px;min-height:100vh}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+
+header{position:sticky;top:0;z-index:20;background:var(--sage);
+  padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--serif);font-weight:300;font-size:23px;color:var(--cream);letter-spacing:.5px}
+.logo i{font-style:italic;color:var(--clay)}
+header .ic{color:var(--cream);background:none;border:none;cursor:pointer;position:relative;display:flex;align-items:center}
+.i{width:22px;height:22px;flex-shrink:0}
+.badge{position:absolute;top:-6px;right:-8px;background:var(--clay);color:var(--cream);
+  font-size:10px;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;padding:0 4px;font-weight:500}
+
+.tagline{text-align:center;padding:18px 24px 6px}
+.tagline p{font-family:var(--serif);font-weight:300;font-size:18px;line-height:1.45;color:var(--ink)}
+.tagline span{color:var(--sage)}
+
+.filters{display:flex;gap:8px;padding:14px 16px 6px;overflow-x:auto;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{font-size:13px;letter-spacing:.3px;padding:7px 15px;border-radius:16px;white-space:nowrap;
+  cursor:pointer;border:none;background:var(--cream);color:var(--ink);transition:.15s;flex-shrink:0}
+.chip.on{background:var(--sage);color:var(--cream)}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:12px 16px 24px}
+@media(min-width:560px){.grid{grid-template-columns:1fr 1fr 1fr}}
+.card{background:#FFFFFF;border-radius:14px;overflow:hidden;border:.5px solid var(--line);
+  display:flex;flex-direction:column;transition:opacity .2s}
+.card.oos{opacity:.45}
+.ph{aspect-ratio:4/5;background:#E8E2D4;position:relative;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph .ico{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:var(--sage)}
+.ph .ico .i{width:46px;height:46px}
+.fav{position:absolute;top:8px;right:8px;background:rgba(251,248,241,.85);border:none;
+  width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--clay)}
+.fav .i{width:17px;height:17px}
+.fav.on{background:var(--clay);color:var(--cream)}
+.tier{position:absolute;top:8px;left:8px;background:var(--clay);color:var(--cream);
+  font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:6px}
+.body{padding:11px 12px 12px;display:flex;flex-direction:column;flex:1}
+.nm{font-size:14px;font-weight:500;line-height:1.3;margin-bottom:3px}
+.sub{font-size:11.5px;color:var(--sage);line-height:1.35;margin-bottom:9px;flex:1}
+.pr{font-family:var(--serif);font-size:16px;margin-bottom:10px}
+.btns{display:flex;gap:6px}
+.btns button{flex:1;padding:8px 0;font-family:var(--sans);font-size:12px;letter-spacing:.3px;
+  border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
+.wa{background:var(--sage);color:var(--cream);border:none}
+.btns button .i,.favbar-btn .i{width:16px;height:16px}
+.wa:active{background:var(--sage-deep)}
+
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:760px;
+  background:var(--limewash);border-top:.5px solid var(--line);display:flex;justify-content:space-around;
+  padding:9px 0 calc(9px + env(safe-area-inset-bottom));z-index:20}
+nav a{flex:1;text-align:center;font-size:10px;letter-spacing:.4px;color:var(--ink);
+  text-decoration:none;opacity:.55;cursor:pointer}
+nav a.on{opacity:1;color:var(--sage)}
+nav a .i{width:22px;height:22px;display:block;margin:0 auto 2px}
+.empty{text-align:center;padding:48px 24px;color:var(--sage);font-size:14px;grid-column:1/-1}
+
+.favbar{position:fixed;bottom:64px;left:50%;transform:translateX(-50%);width:calc(100% - 24px);
+  max-width:736px;background:var(--sage);border-radius:14px;padding:12px 14px;z-index:21;
+  display:none;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:0 4px 18px rgba(58,54,49,.18)}
+.favbar.show{display:flex}
+.favbar-info{display:flex;flex-direction:column;color:var(--cream);line-height:1.25}
+.favbar-info span:first-child{font-size:12px;opacity:.85;letter-spacing:.3px}
+.favbar-info span:last-child{font-family:var(--serif);font-size:18px}
+.favbar-btn{background:var(--cream);color:var(--sage-deep);border:none;border-radius:10px;
+  padding:11px 16px;font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.3px;
+  cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.favbar-btn:active{background:#fff}
+</style>
+</head>
+<body>
+<h1 class="sr">BookSprout — английские детские книги, Астана</h1>
+
+<header>
+  <span class="logo">book<i>sprout</i></span>
+  <button class="ic" id="favBtn" aria-label="Избранное">
+    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z"/></svg>
+    <span class="badge" id="favCount" style="display:none">0</span>
+  </button>
+</header>
+
+<div class="tagline">
+  <p>Английские книги, которые ребёнок <span>просит перечитать</span></p>
+</div>
+
+<div class="filters" id="filters"></div>
+<div class="grid" id="grid"></div>
+
+<div class="favbar" id="favbar">
+  <div class="favbar-info">
+    <span id="favbar-count">0 книг</span>
+    <span id="favbar-total">0 ₸</span>
+  </div>
+  <button class="favbar-btn" id="favbar-btn">
+    <svg class="i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm5.6 14c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.7-4-4.9-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.2-.2.5-.3.6-.3h.5c.2 0 .4 0 .6.5l.7 1.8c.1.1.1.3 0 .5l-.3.5-.3.3c-.1.1-.2.3-.1.5.1.2.6 1 1.4 1.7 1 .9 1.8 1.1 2 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.7.8c.2.1.4.2.4.3.1.1.1.5-.1 1z"/></svg>Написать по выбранным</button>
+</div>
+
+<nav>
+  <a class="on" data-view="all">
+    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v16H4zM10 4h5l3 14-5 1z"/><path d="M19 4h1v16h-1"/></svg>каталог</a>
+  <a data-view="fav">
+    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z"/></svg>избранное</a>
+  <a id="navWa">
+    <svg class="i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm5.6 14c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.7-4-4.9-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.2-.2.5-.3.6-.3h.5c.2 0 .4 0 .6.5l.7 1.8c.1.1.1.3 0 .5l-.3.5-.3.3c-.1.1-.2.3-.1.5.1.2.6 1 1.4 1.7 1 .9 1.8 1.1 2 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.7.8c.2.1.4.2.4.3.1.1.1.5-.1 1z"/></svg>написать</a>
+</nav>
+
+<script>
+/* ============================================================
+   BOOKSPROUT — РЕДАКТИРУЙ ТОЛЬКО ЭТОТ БЛОК
+   ============================================================
+   WHATSAPP: вставь номер в международном формате без + и без пробелов.
+   Пример Казахстан: 77011234567
+*/
+const WHATSAPP = "77005530007";
+
+/* КАТЕГОРИИ фильтров (label = что видит клиент, key = тег товара) */
+const CATEGORIES = [
+  {key:"all",          label:"все"},
+  {key:"0-2",          label:"0–2"},
+  {key:"2-4",          label:"2–4"},
+  {key:"4-6",          label:"4–6"},
+  {key:"stickers",     label:"наклейки"},
+  {key:"flash-cards",  label:"flash cards"},
+];
+
+/* ТОВАРЫ. Поля:
+   id, name, sub(подпись), price(число ₸), cats(массив тегов),
+   img(путь к своему фото или "" чтобы показать иконку),
+   tier("" / "target"), stock(false = "под заказ")
+*/
+const PRODUCTS = [
+  {id:"bizzy-pilot",     name:"Bizzy Bear Aeroplane Pilot",              sub:"Board book, Bizzy Bear",    price:4500,  cats:["0-2","2-4"],     img:"img/BizzyBear_AeroplanePilot.png", tier:"", stock:true},
+  {id:"bizzy-building",  name:"Bizzy Bear Building Site",                sub:"Board book, Bizzy Bear",    price:4500,  cats:["0-2","2-4"],     img:"img/BizzyBear_BuildingSite.png", tier:"", stock:false},
+  {id:"bizzy-football",  name:"Bizzy Bear: Football Player",             sub:"Board book, Bizzy Bear",    price:4500,  cats:["0-2","2-4"],     img:"img/BizzyBear_FootballPlayer.png", tier:"", stock:false},
+  {id:"bizzy-space",     name:"Bizzy Bear: Space Rocket",                sub:"Board book, Bizzy Bear",    price:4500,  cats:["0-2","2-4"],     img:"img/BizzyBear_SpaceRocket.png", tier:"", stock:false},
+  {id:"bizzy-train",     name:"Bizzy Bear: Train Driver",                sub:"Board book, Bizzy Bear",    price:4500,  cats:["0-2","2-4"],     img:"img/BizzyBear_TrainDriver.png", tier:"", stock:true},
+  {id:"bizzy-vets",      name:"Bizzy Bear: Vets Clinic",                 sub:"Board book, Bizzy Bear",    price:4500,  cats:["0-2","2-4"],     img:"img/BizzyBear_VetsClinic.png", tier:"", stock:true},
+  {id:"brown-bear",      name:"Brown Bear",                              sub:"Классика, Eric Carle",      price:4500,  cats:["0-2"],           img:"img/BrownBear.png", tier:"", stock:true},
+  {id:"busy-doctor",     name:"Busy Day: Doctor",                        sub:"Книга с клапанами",         price:8600,  cats:["2-4"],           img:"img/BusyDayDoctor.png", tier:"", stock:true},
+  {id:"busy-garden",     name:"Busy Series Garden",                      sub:"Интерактивная книга",       price:4600,  cats:["2-4"],           img:"img/BusySeriesGarden.png", tier:"", stock:true},
+  {id:"sticker-edu",     name:"Children's early education sticker book", sub:"Книга с наклейками",        price:2000,  cats:["2-4","stickers"], img:"", tier:"", stock:false},
+  {id:"dear-zoo",        name:"Dear Zoo",                                sub:"Книга с клапанами",         price:4200,  cats:["0-2","2-4"],     img:"img/DearZoo.png", tier:"", stock:true},
+  {id:"hape-wooden",     name:"Hape Wooden Whistle",                     sub:"Деревянная свистулька",     price:2500,  cats:["0-2","2-4"],     img:"img/HapeWoodenWhistle.jpeg", tier:"", stock:true},
+  {id:"fc-animal",       name:"Kids English Flash Cards Animal",         sub:"Карточки — животные",       price:2000,  cats:["0-2","2-4","flash-cards"], img:"", tier:"", stock:true},
+  {id:"fc-body",         name:"Kids English Flash Cards Body Parts",     sub:"Карточки — части тела",     price:2000,  cats:["2-4","flash-cards"],      img:"", tier:"", stock:false},
+  {id:"fc-color",        name:"Kids English Flash Cards Color",          sub:"Карточки — цвета",          price:2000,  cats:["0-2","2-4","flash-cards"], img:"", tier:"", stock:true},
+  {id:"fc-fruits",       name:"Kids English Flash Cards Fruits",         sub:"Карточки — фрукты",         price:2000,  cats:["0-2","2-4","flash-cards"], img:"", tier:"", stock:true},
+  {id:"fc-shape",        name:"Kids English Flash Cards Shape",          sub:"Карточки — формы",          price:2000,  cats:["2-4","flash-cards"],      img:"", tier:"", stock:true},
+  {id:"fc-vegetables",   name:"Kids English Flash Cards Vegetables",     sub:"Карточки — овощи",          price:2000,  cats:["0-2","2-4","flash-cards"], img:"", tier:"", stock:true},
+  {id:"peppa-hide",      name:"Peppa Pig Hide-and-Seek",                 sub:"Книга с клапанами, Peppa",  price:6900,  cats:["2-4"],           img:"img/PeppaPigHideandSeek.png", tier:"", stock:true},
+  {id:"peppa-friends",   name:"Peppa Pig and Friends",                   sub:"Сборник историй, Peppa",    price:10000, cats:["2-4","4-6"],     img:"img/PeppaPigandFriends.jpeg", tier:"", stock:true},
+  {id:"step-body",       name:"Step inside Science: Your Body",          sub:"Энциклопедия, Usborne",     price:10900, cats:["4-6"],           img:"img/StepInsideScienceYourBody.png", tier:"", stock:false},
+  {id:"orch-swan",       name:"Story Orchestra: Swan Lake",              sub:"Музыкальная книга",         price:15000, cats:["2-4","4-6"],     img:"img/StoryOrchestraSwanLake.jpeg", tier:"", stock:true},
+  {id:"orch-play",       name:"The Story Orchestra I Can Play",          sub:"Музыкальная книга",         price:15000, cats:["2-4","4-6"],     img:"img/StoryOrchestraICanPlay.png", tier:"", stock:false},
+  {id:"orch-nutcracker", name:"The Story Orchestra: The Nutcracker",     sub:"Музыкальная книга",         price:15000, cats:["2-4","4-6"],     img:"img/StoryOrchestraNutcracker.png", tier:"", stock:true},
+  {id:"vhc-magnet",      name:"The Very Hungry Caterpillar Magnet Book", sub:"Магнитная книга, Eric Carle", price:10700, cats:["2-4"],         img:"img/TheVeryHungryCaterpillarMagnetBook.png", tier:"", stock:true},
+  {id:"vhc-eat",         name:"The Very Hungry Caterpillar Time to Eat! Magnet Book", sub:"Магнитная книга, Eric Carle", price:14500, cats:["2-4"], img:"img/TheVeryHungryCaterpillarTimetoEat.png", tier:"", stock:true},
+  {id:"there-kitten",    name:"There There Little Kitten",               sub:"Тактильная книга",          price:12400, cats:["0-2"],           img:"img/ThereThereLittleKitten.png", tier:"", stock:true},
+  {id:"usborne-sticker", name:"First English Words. Sticker book",       sub:"Книга с наклейками",        price:2000,  cats:["2-4","stickers"], img:"img/StickerBookFirstEnglishWords.jpg", tier:"", stock:true},
+  {id:"vhc-abc",         name:"VHC ABC Book",                            sub:"Алфавит, Eric Carle",       price:8400,  cats:["2-4","4-6"],     img:"img/VeryHungryCaterpillarABCBook.png", tier:"", stock:true},
+  {id:"wheres-spot",     name:"Where's Spot?",                           sub:"Книга с клапанами",         price:6900,  cats:["0-2","2-4"],     img:"img/Where'sSpot.png", tier:"", stock:true},
+];
+/* ============== КОНЕЦ РЕДАКТИРУЕМОГО БЛОКА ============== */
+
+const tg = (n)=>new Intl.NumberFormat('ru-RU').format(Math.round(n))+" ₸";
+
+const ICON = {
+  book:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h10a2 2 0 0 1 2 2v13a1 1 0 0 0-1-1H5z"/><path d="M5 18a1 1 0 0 0-1 1V6a2 2 0 0 1 2-2"/></svg>',
+  heart:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z"/></svg>',
+  heartFill:'<svg class="i" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z"/></svg>',
+  wa:'<svg class="i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm5.6 14c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.7-4-4.9-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.2-.2.5-.3.6-.3h.5c.2 0 .4 0 .6.5l.7 1.8c.1.1.1.3 0 .5l-.3.5-.3.3c-.1.1-.2.3-.1.5.1.2.6 1 1.4 1.7 1 .9 1.8 1.1 2 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.7.8c.2.1.4.2.4.3.1.1.1.5-.1 1z"/></svg>'
+};
+let view="all", filter="all";
+let favs = JSON.parse(localStorage.getItem('bs_favs')||'[]');
+
+function waLink(p){
+  const msg = p
+    ? `Здравствуйте! Интересует «${p.name}» (${tg(p.price)}). Подскажите по наличию и доставке?`
+    : `Здравствуйте! Хочу подобрать книги. Возраст ребёнка: `;
+  return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+}
+
+function waFavLink(){
+  const chosen = PRODUCTS.filter(p=>favs.includes(p.id));
+  if(!chosen.length) return waLink();
+  const lines = chosen.map(p=>`• ${p.name} — ${tg(p.price)}`).join('\n');
+  const total = chosen.reduce((s,p)=>s+p.price,0);
+  const msg = `Здравствуйте! Хочу заказать из BookSprout:\n${lines}\n\nИтого: ${tg(total)}. Подскажите по наличию и доставке?`;
+  return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+}
+
+function renderFilters(){
+  document.getElementById('filters').innerHTML = CATEGORIES.map(c=>
+    `<button class="chip ${filter===c.key?'on':''}" data-f="${c.key}">${c.label}</button>`).join('');
+}
+
+function visible(){
+  let list = PRODUCTS;
+  if(view==="fav") list = list.filter(p=>favs.includes(p.id));
+  if(filter!=="all" && view!=="fav") list = list.filter(p=>p.cats.includes(filter));
+  function rank(p){ return p.stock ? (p.img ? 0 : 1) : 2; }
+  list = [...list].sort((a,b)=> rank(a) - rank(b));
+  return list;
+}
+
+function card(p){
+  const isFav = favs.includes(p.id);
+  const tierLabel = p.tier==="target" ? "выбор" : "";
+  const photo = p.img
+    ? `<img src="${p.img}" alt="${p.name}" loading="lazy">`
+    : `<div class="ico">${ICON.book}</div>`;
+  return `<div class="card${p.stock?'':' oos'}">
+    <div class="ph">
+      ${photo}
+      ${tierLabel?`<span class="tier">${tierLabel}</span>`:""}
+      ${p.stock?"":'<span class="tier" style="background:var(--ink)">под заказ</span>'}
+      <button class="fav ${isFav?'on':''}" data-fav="${p.id}" aria-label="В избранное">
+        ${isFav?ICON.heartFill:ICON.heart}</button>
+    </div>
+    <div class="body">
+      <p class="nm">${p.name}</p>
+      <p class="sub">${p.sub}</p>
+      <p class="pr">${tg(p.price)}</p>
+      <div class="btns">
+        <button class="wa" onclick="openLink('${waLink(p)}')">
+          ${ICON.wa}написать</button>
+      </div>
+    </div></div>`;
+}
+
+function render(){
+  const list = visible();
+  const g = document.getElementById('grid');
+  g.innerHTML = list.length
+    ? list.map(card).join('')
+    : `<div class="empty">${view==="fav"?"Пока пусто. Отмечайте книги сердечком.":"Ничего не найдено."}</div>`;
+  const fc = document.getElementById('favCount');
+  if(favs.length){fc.style.display='flex';fc.textContent=favs.length;} else fc.style.display='none';
+  document.getElementById('filters').style.display = view==="fav" ? 'none' : 'flex';
+
+  const bar = document.getElementById('favbar');
+  const chosen = PRODUCTS.filter(p=>favs.includes(p.id));
+  if(view==="fav" && chosen.length){
+    const total = chosen.reduce((s,p)=>s+p.price,0);
+    const n = chosen.length;
+    const word = n%10===1&&n%100!==11 ? "книга" : (n%10>=2&&n%10<=4&&(n%100<10||n%100>=20) ? "книги" : "книг");
+    document.getElementById('favbar-count').textContent = `${n} ${word}`;
+    document.getElementById('favbar-total').textContent = tg(total);
+    bar.classList.add('show');
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+function openLink(url){ window.open(url,'_blank','noopener'); }
+
+document.getElementById('filters').addEventListener('click',e=>{
+  const b=e.target.closest('[data-f]'); if(!b)return;
+  filter=b.dataset.f; renderFilters(); render();
+});
+document.getElementById('grid').addEventListener('click',e=>{
+  const b=e.target.closest('[data-fav]'); if(!b)return;
+  const id=b.dataset.fav;
+  favs = favs.includes(id) ? favs.filter(x=>x!==id) : [...favs,id];
+  localStorage.setItem('bs_favs',JSON.stringify(favs));
+  render();
+});
+document.querySelectorAll('nav a[data-view]').forEach(a=>{
+  a.addEventListener('click',()=>{
+    view=a.dataset.view;
+    document.querySelectorAll('nav a').forEach(x=>x.classList.remove('on'));
+    a.classList.add('on');
+    render();
+  });
+});
+document.getElementById('navWa').addEventListener('click',()=>openLink(waLink()));
+document.getElementById('favBtn').addEventListener('click',()=>{
+  document.querySelector('nav a[data-view="fav"]').click();
+});
+document.getElementById('favbar-btn').addEventListener('click',()=>openLink(waFavLink()));
+
+renderFilters(); render();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>

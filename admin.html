@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BookSprout — Админ</title>
+<style>
+:root{--sage:#7C8770;--sage-deep:#5C6651;--cream:#FBF8F1;--ink:#3A3631;--clay:#C08A6E;--line:#e0ddd6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f0;color:var(--ink);font-size:14px}
+header{background:var(--sage);color:var(--cream);padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:20px;font-weight:500}
+.actions{display:flex;gap:8px}
+.btn{padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer}
+.btn-primary{background:var(--cream);color:var(--sage-deep)}
+.btn-primary:hover{background:#fff}
+.btn-danger{background:var(--clay);color:var(--cream)}
+.btn-add{background:var(--sage-deep);color:var(--cream);margin:12px 16px}
+.btn-add:hover{background:var(--sage)}
+.wrap{max-width:1200px;margin:0 auto;padding:16px}
+.table-wrap{overflow-x:auto;background:#fff;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th{background:var(--sage);color:var(--cream);padding:10px 8px;text-align:left;font-weight:500;font-size:12px;
+  letter-spacing:.3px;text-transform:uppercase;position:sticky;top:0;white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:hover{background:#f9f8f4}
+tr.oos{opacity:.5}
+input,select{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;width:100%;background:#fff}
+input:focus,select:focus{outline:none;border-color:var(--sage)}
+input[type="number"]{width:90px}
+input[type="checkbox"]{width:auto}
+.img-cell{width:50px}
+.img-cell img{width:44px;height:44px;object-fit:cover;border-radius:6px;display:block}
+.img-cell .no-img{width:44px;height:44px;background:#e8e2d4;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--sage);font-size:10px}
+.cats-cell{display:flex;flex-wrap:wrap;gap:3px}
+.cats-cell label{font-size:11px;white-space:nowrap;display:flex;align-items:center;gap:2px;
+  background:var(--cream);padding:2px 6px;border-radius:4px}
+.cats-cell input{width:auto;margin:0}
+.del-btn{background:none;border:none;color:var(--clay);cursor:pointer;font-size:16px;padding:4px}
+.del-btn:hover{color:#a03030}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--sage);color:var(--cream);
+  padding:12px 20px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+.code-box{margin:12px 16px;padding:16px;background:#fff;border-radius:12px;border:1px solid var(--line)}
+.code-box h3{font-size:14px;margin-bottom:8px}
+.code-box textarea{width:100%;height:200px;font-family:'SF Mono',monospace;font-size:12px;
+  padding:12px;border:1px solid var(--line);border-radius:8px;resize:vertical}
+.code-box .btn{margin-top:8px}
+.info{padding:8px 16px;font-size:12px;color:var(--sage);margin-bottom:4px}
+</style>
+</head>
+<body>
+<header>
+  <h1>BookSprout Admin</h1>
+  <div class="actions">
+    <button class="btn btn-primary" onclick="generateCode()">Сгенерировать код</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="info">Редактируй таблицу, затем нажми «Сгенерировать код» и вставь результат в index.html</p>
+  <button class="btn btn-add" onclick="addRow()">+ Добавить товар</button>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Фото</th>
+          <th>ID</th>
+          <th>Название</th>
+          <th>Подпись</th>
+          <th>Цена ₸</th>
+          <th>Категории</th>
+          <th>Файл фото</th>
+          <th>В наличии</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="code-box" id="codebox" style="display:none">
+    <h3>Скопируй и вставь этот блок в index.html (замени весь массив PRODUCTS)</h3>
+    <textarea id="codeout" readonly></textarea>
+    <button class="btn btn-primary" onclick="copyCode()">Скопировать</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ALL_CATS = ["0-2","2-4","4-6","stickers","flash-cards"];
+
+let products = [
+  {id:"bizzy-pilot",name:"Bizzy Bear Aeroplane Pilot",sub:"Board book, Bizzy Bear",price:4500,cats:["0-2","2-4"],img:"img/BizzyBear_AeroplanePilot.png",tier:"",stock:true},
+  {id:"bizzy-building",name:"Bizzy Bear Building Site",sub:"Board book, Bizzy Bear",price:4500,cats:["0-2","2-4"],img:"img/BizzyBear_BuildingSite.png",tier:"",stock:false},
+  {id:"bizzy-football",name:"Bizzy Bear: Football Player",sub:"Board book, Bizzy Bear",price:4500,cats:["0-2","2-4"],img:"img/BizzyBear_FootballPlayer.png",tier:"",stock:false},
+  {id:"bizzy-space",name:"Bizzy Bear: Space Rocket",sub:"Board book, Bizzy Bear",price:4500,cats:["0-2","2-4"],img:"img/BizzyBear_SpaceRocket.png",tier:"",stock:false},
+  {id:"bizzy-train",name:"Bizzy Bear: Train Driver",sub:"Board book, Bizzy Bear",price:4500,cats:["0-2","2-4"],img:"img/BizzyBear_TrainDriver.png",tier:"",stock:true},
+  {id:"bizzy-vets",name:"Bizzy Bear: Vets Clinic",sub:"Board book, Bizzy Bear",price:4500,cats:["0-2","2-4"],img:"img/BizzyBear_VetsClinic.png",tier:"",stock:true},
+  {id:"brown-bear",name:"Brown Bear",sub:"Классика, Eric Carle",price:4500,cats:["0-2"],img:"img/BrownBear.png",tier:"",stock:true},
+  {id:"busy-doctor",name:"Busy Day: Doctor",sub:"Книга с клапанами",price:8600,cats:["2-4"],img:"img/BusyDayDoctor.png",tier:"",stock:true},
+  {id:"busy-garden",name:"Busy Series Garden",sub:"Интерактивная книга",price:4600,cats:["2-4"],img:"img/BusySeriesGarden.png",tier:"",stock:true},
+  {id:"sticker-edu",name:"Children's early education sticker book",sub:"Книга с наклейками",price:2000,cats:["2-4","stickers"],img:"",tier:"",stock:false},
+  {id:"dear-zoo",name:"Dear Zoo",sub:"Книга с клапанами",price:4200,cats:["0-2","2-4"],img:"img/DearZoo.png",tier:"",stock:true},
+  {id:"hape-wooden",name:"Hape Wooden Whistle",sub:"Деревянная свистулька",price:2500,cats:["0-2","2-4"],img:"img/HapeWoodenWhistle.jpeg",tier:"",stock:true},
+  {id:"fc-animal",name:"Kids English Flash Cards Animal",sub:"Карточки — животные",price:2000,cats:["0-2","2-4","flash-cards"],img:"",tier:"",stock:true},
+  {id:"fc-body",name:"Kids English Flash Cards Body Parts",sub:"Карточки — части тела",price:2000,cats:["2-4","flash-cards"],img:"img/BodyPartsFlashcard.jpeg",tier:"",stock:false},
+  {id:"fc-color",name:"Kids English Flash Cards Color",sub:"Карточки — цвета",price:2000,cats:["0-2","2-4","flash-cards"],img:"",tier:"",stock:true},
+  {id:"fc-fruits",name:"Kids English Flash Cards Fruits",sub:"Карточки — фрукты",price:2000,cats:["0-2","2-4","flash-cards"],img:"",tier:"",stock:true},
+  {id:"fc-shape",name:"Kids English Flash Cards Shape",sub:"Карточки — формы",price:2000,cats:["2-4","flash-cards"],img:"",tier:"",stock:true},
+  {id:"fc-vegetables",name:"Kids English Flash Cards Vegetables",sub:"Карточки — овощи",price:2000,cats:["0-2","2-4","flash-cards"],img:"",tier:"",stock:true},
+  {id:"peppa-hide",name:"Peppa Pig Hide-and-Seek",sub:"Книга с клапанами, Peppa",price:6900,cats:["2-4"],img:"img/PeppaPigHideandSeek.png",tier:"",stock:true},
+  {id:"peppa-friends",name:"Peppa Pig and Friends",sub:"Сборник историй, Peppa",price:10000,cats:["2-4","4-6"],img:"img/PeppaPigandFriends.jpeg",tier:"",stock:true},
+  {id:"step-body",name:"Step inside Science: Your Body",sub:"Энциклопедия, Usborne",price:10900,cats:["4-6"],img:"img/StepInsideScienceYourBody.png",tier:"",stock:false},
+  {id:"orch-swan",name:"Story Orchestra: Swan Lake",sub:"Музыкальная книга",price:15000,cats:["2-4","4-6"],img:"img/StoryOrchestraSwanLake.jpeg",tier:"",stock:true},
+  {id:"orch-play",name:"The Story Orchestra I Can Play",sub:"Музыкальная книга",price:15000,cats:["2-4","4-6"],img:"img/StoryOrchestraICanPlay.png",tier:"",stock:false},
+  {id:"orch-nutcracker",name:"The Story Orchestra: The Nutcracker",sub:"Музыкальная книга",price:15000,cats:["2-4","4-6"],img:"img/StoryOrchestraNutcracker.png",tier:"",stock:true},
+  {id:"vhc-magnet",name:"The Very Hungry Caterpillar Magnet Book",sub:"Магнитная книга, Eric Carle",price:10700,cats:["2-4"],img:"img/TheVeryHungryCaterpillarMagnetBook.png",tier:"",stock:false},
+  {id:"vhc-eat",name:"The Very Hungry Caterpillar Time to Eat! Magnet Book",sub:"Магнитная книга, Eric Carle",price:14500,cats:["2-4"],img:"img/TheVeryHungryCaterpillarTimetoEat.png",tier:"",stock:true},
+  {id:"there-kitten",name:"There There Little Kitten",sub:"Тактильная книга",price:12400,cats:["0-2"],img:"img/ThereThereLittleKitten.png",tier:"",stock:true},
+  {id:"usborne-sticker",name:"First English Words. Sticker book",sub:"Книга с наклейками",price:2000,cats:["2-4","stickers"],img:"img/StickerBookFirstEnglishWords.jpg",tier:"",stock:true},
+  {id:"vhc-abc",name:"VHC ABC Book",sub:"Алфавит, Eric Carle",price:8400,cats:["2-4","4-6"],img:"img/VeryHungryCaterpillarABCBook.png",tier:"",stock:true},
+  {id:"wheres-spot",name:"Where's Spot?",sub:"Книга с клапанами",price:6900,cats:["0-2","2-4"],img:"img/Where'sSpot.png",tier:"",stock:true},
+];
+
+function render(){
+  const tb = document.getElementById('tbody');
+  tb.innerHTML = products.map((p,i) => {
+    const imgHtml = p.img
+      ? `<img src="${p.img}" alt="">`
+      : `<div class="no-img">—</div>`;
+    const catChecks = ALL_CATS.map(c =>
+      `<label><input type="checkbox" data-row="${i}" data-cat="${c}" ${p.cats.includes(c)?'checked':''}>${c}</label>`
+    ).join('');
+    return `<tr class="${p.stock?'':'oos'}">
+      <td style="color:#aaa;font-size:11px">${i+1}</td>
+      <td class="img-cell">${imgHtml}</td>
+      <td><input value="${esc(p.id)}" data-row="${i}" data-field="id"></td>
+      <td><input value="${esc(p.name)}" data-row="${i}" data-field="name"></td>
+      <td><input value="${esc(p.sub)}" data-row="${i}" data-field="sub"></td>
+      <td><input type="number" value="${p.price}" data-row="${i}" data-field="price"></td>
+      <td><div class="cats-cell">${catChecks}</div></td>
+      <td><input value="${esc(p.img)}" data-row="${i}" data-field="img" placeholder="img/file.png"></td>
+      <td style="text-align:center"><input type="checkbox" data-row="${i}" data-field="stock" ${p.stock?'checked':''}></td>
+      <td><button class="del-btn" onclick="delRow(${i})" title="Удалить">&times;</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function esc(s){ return s.replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+document.getElementById('tbody').addEventListener('input', e => {
+  const el = e.target;
+  const i = parseInt(el.dataset.row);
+  if(isNaN(i)) return;
+  if(el.dataset.field){
+    const f = el.dataset.field;
+    if(f === 'stock') products[i].stock = el.checked;
+    else if(f === 'price') products[i].price = parseInt(el.value)||0;
+    else products[i][f] = el.value;
+  }
+  if(el.dataset.cat){
+    const cat = el.dataset.cat;
+    if(el.checked && !products[i].cats.includes(cat)) products[i].cats.push(cat);
+    if(!el.checked) products[i].cats = products[i].cats.filter(c=>c!==cat);
+  }
+});
+
+function addRow(){
+  const n = products.length + 1;
+  products.push({id:`new-${n}`,name:"",sub:"",price:0,cats:[],img:"",tier:"",stock:true});
+  render();
+  document.querySelector('.table-wrap').scrollTop = 99999;
+}
+
+function delRow(i){
+  if(!confirm(`Удалить «${products[i].name||products[i].id}»?`)) return;
+  products.splice(i,1);
+  render();
+}
+
+function generateCode(){
+  const lines = products.map(p => {
+    const cats = JSON.stringify(p.cats);
+    return `  {id:"${p.id}", name:"${p.name}", sub:"${p.sub}", price:${p.price}, cats:${cats}, img:"${p.img}", tier:"${p.tier}", stock:${p.stock}},`;
+  });
+  const code = `const PRODUCTS = [\n${lines.join('\n')}\n];`;
+  document.getElementById('codeout').value = code;
+  document.getElementById('codebox').style.display = 'block';
+  document.getElementById('codebox').scrollIntoView({behavior:'smooth'});
+}
+
+function copyCode(){
+  const ta = document.getElementById('codeout');
+  ta.select();
+  document.execCommand('copy');
+  toast('Скопировано! Вставь в index.html');
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+render();
+</script>
+</body>
+</html>

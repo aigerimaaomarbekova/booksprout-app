@@ -26,21 +26,37 @@ header{position:sticky;top:0;z-index:20;background:var(--sage);
   padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
 .logo{font-family:var(--serif);font-weight:300;font-size:23px;color:var(--cream);letter-spacing:.5px}
 .logo i{font-style:italic;color:var(--clay)}
+.hdr-right{display:flex;align-items:center;gap:12px}
 header .ic{color:var(--cream);background:none;border:none;cursor:pointer;position:relative;display:flex;align-items:center}
 .i{width:22px;height:22px;flex-shrink:0}
 .badge{position:absolute;top:-6px;right:-8px;background:var(--clay);color:var(--cream);
   font-size:10px;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;
   justify-content:center;padding:0 4px;font-weight:500}
 
+.lang-sw{display:flex;gap:2px;background:rgba(255,255,255,.15);border-radius:8px;padding:2px}
+.lang-btn{font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:.3px;
+  padding:4px 7px;border:none;border-radius:6px;cursor:pointer;
+  background:transparent;color:rgba(251,248,241,.7);transition:.15s}
+.lang-btn.on{background:var(--cream);color:var(--sage-deep)}
+
 .tagline{text-align:center;padding:18px 24px 6px}
 .tagline p{font-family:var(--serif);font-weight:300;font-size:18px;line-height:1.45;color:var(--ink)}
 .tagline span{color:var(--sage)}
 
-.filters{display:flex;gap:8px;padding:14px 16px 6px;overflow-x:auto;scrollbar-width:none}
-.filters::-webkit-scrollbar{display:none}
+.search-wrap{padding:10px 16px 0;position:relative}
+.search-wrap input{width:100%;padding:10px 14px 10px 38px;border:1px solid var(--line);border-radius:12px;
+  font-family:var(--sans);font-size:14px;background:var(--cream);color:var(--ink);outline:none;transition:.2s}
+.search-wrap input:focus{border-color:var(--sage);box-shadow:0 0 0 2px rgba(124,135,112,.15)}
+.search-wrap input::placeholder{color:rgba(58,54,49,.35)}
+.search-wrap svg{position:absolute;left:28px;top:50%;transform:translateY(-50%);width:18px;height:18px;
+  color:rgba(58,54,49,.35);pointer-events:none}
+
+.toolbar{display:flex;gap:8px;padding:14px 16px 6px;overflow-x:auto;scrollbar-width:none;align-items:center}
+.toolbar::-webkit-scrollbar{display:none}
 .chip{font-size:13px;letter-spacing:.3px;padding:7px 15px;border-radius:16px;white-space:nowrap;
   cursor:pointer;border:none;background:var(--cream);color:var(--ink);transition:.15s;flex-shrink:0}
 .chip.on{background:var(--sage);color:var(--cream)}
+.sep{width:1px;height:20px;background:var(--line);flex-shrink:0;margin:0 2px}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:12px 16px 24px}
 @media(min-width:560px){.grid{grid-template-columns:1fr 1fr 1fr}}
@@ -94,39 +110,53 @@ nav a .i{width:22px;height:22px;display:block;margin:0 auto 2px}
 </style>
 </head>
 <body>
-<h1 class="sr">BookSprout — английские детские книги, Астана</h1>
+<h1 class="sr" id="sr-title">BookSprout — английские детские книги, Астана</h1>
 
 <header>
   <span class="logo">book<i>sprout</i></span>
-  <button class="ic" id="favBtn" aria-label="Избранное">
-    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z"/></svg>
-    <span class="badge" id="favCount" style="display:none">0</span>
-  </button>
+  <div class="hdr-right">
+    <div class="lang-sw" id="langSw">
+      <button class="lang-btn on" data-lang="ru">RU</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="kz">KZ</button>
+    </div>
+    <button class="ic" id="favBtn" aria-label="Избранное">
+      <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z"/></svg>
+      <span class="badge" id="favCount" style="display:none">0</span>
+    </button>
+  </div>
 </header>
 
 <div class="tagline">
-  <p>Английские книги, которые ребёнок <span>просит перечитать</span></p>
+  <p id="tagline"></p>
 </div>
 
-<div class="filters" id="filters"></div>
+<div class="search-wrap">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+  <input type="search" id="searchInput" autocomplete="off">
+</div>
+
+<div class="toolbar" id="toolbar"></div>
 <div class="grid" id="grid"></div>
 
 <div class="favbar" id="favbar">
   <div class="favbar-info">
-    <span id="favbar-count">0 книг</span>
+    <span id="favbar-count"></span>
     <span id="favbar-total">0 ₸</span>
   </div>
   <button class="favbar-btn" id="favbar-btn">
-    <svg class="i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm5.6 14c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.7-4-4.9-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.2-.2.5-.3.6-.3h.5c.2 0 .4 0 .6.5l.7 1.8c.1.1.1.3 0 .5l-.3.5-.3.3c-.1.1-.2.3-.1.5.1.2.6 1 1.4 1.7 1 .9 1.8 1.1 2 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.7.8c.2.1.4.2.4.3.1.1.1.5-.1 1z"/></svg>Написать по выбранным</button>
+    <svg class="i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm5.6 14c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.7-4-4.9-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.2-.2.5-.3.6-.3h.5c.2 0 .4 0 .6.5l.7 1.8c.1.1.1.3 0 .5l-.3.5-.3.3c-.1.1-.2.3-.1.5.1.2.6 1 1.4 1.7 1 .9 1.8 1.1 2 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.7.8c.2.1.4.2.4.3.1.1.1.5-.1 1z"/></svg>
+    <span id="favbar-btn-text"></span>
+  </button>
 </div>
 
 <nav>
   <a class="on" data-view="all">
-    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v16H4zM10 4h5l3 14-5 1z"/><path d="M19 4h1v16h-1"/></svg>каталог</a>
+    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v16H4zM10 4h5l3 14-5 1z"/><path d="M19 4h1v16h-1"/></svg><span data-t="catalog"></span></a>
   <a data-view="fav">
-    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z"/></svg>избранное</a>
+    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z"/></svg><span data-t="favorites"></span></a>
   <a id="navWa">
-    <svg class="i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm5.6 14c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.7-4-4.9-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.2-.2.5-.3.6-.3h.5c.2 0 .4 0 .6.5l.7 1.8c.1.1.1.3 0 .5l-.3.5-.3.3c-.1.1-.2.3-.1.5.1.2.6 1 1.4 1.7 1 .9 1.8 1.1 2 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.7.8c.2.1.4.2.4.3.1.1.1.5-.1 1z"/></svg>написать</a>
+    <svg class="i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm5.6 14c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.7-4-4.9-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.2-.2.5-.3.6-.3h.5c.2 0 .4 0 .6.5l.7 1.8c.1.1.1.3 0 .5l-.3.5-.3.3c-.1.1-.2.3-.1.5.1.2.6 1 1.4 1.7 1 .9 1.8 1.1 2 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.7.8c.2.1.4.2.4.3.1.1.1.5-.1 1z"/></svg><span data-t="write"></span></a>
 </nav>
 
 <script>
@@ -138,72 +168,128 @@ nav a .i{width:22px;height:22px;display:block;margin:0 auto 2px}
 */
 const WHATSAPP = "77005530007";
 
-/* КАТЕГОРИИ фильтров (label = что видит клиент, key = тег товара) */
+/* КАТЕГОРИИ фильтров (key = тег товара, label = {ru,en,kz}) */
 const CATEGORIES = [
-  {key:"all",          label:"все"},
-  {key:"0-2",          label:"0–2"},
-  {key:"2-4",          label:"2–4"},
-  {key:"4-6",          label:"4–6"},
-  {key:"stickers",     label:"наклейки"},
-  {key:"flash-cards",  label:"flash cards"},
+  {key:"all",         label:{ru:"все",        en:"all",      kz:"барлығы"}},
+  {key:"0-2",         label:{ru:"0–2",        en:"0–2",      kz:"0–2"}},
+  {key:"2-4",         label:{ru:"2–4",        en:"2–4",      kz:"2–4"}},
+  {key:"4-6",         label:{ru:"4–6",        en:"4–6",      kz:"4–6"}},
+  {key:"stickers",    label:{ru:"наклейки",   en:"stickers", kz:"жапсырмалар"}},
+  {key:"flash-cards", label:{ru:"flash cards",en:"flash cards",kz:"flash cards"}},
 ];
 
 /* ТОВАРЫ. Поля:
-   id, name, sub(подпись), price(число ₸), cats(массив тегов),
-   img(путь к своему фото или "" чтобы показать иконку),
-   tier("" / "target"), stock(false = "под заказ")
+   id, name, sub:{ru,en,kz}, price(число ₸), cats(массив тегов),
+   img(путь к фото или ""), tier("" / "target"), stock(false = "под заказ")
 */
 const PRODUCTS = [
-  {id:"1000-words", name:"1000 Useful Words", sub:"Словарь в картинках, DK", price:7000, cats:["2-4","4-6"], img:"", tier:"", stock:false},
-  {id:"all-maths", name:"ALL THE MATHS YOU NEED TO KNOW", sub:"Математика, DK", price:9000, cats:["4-6"], img:"img/AllTheMaths.png", tier:"", stock:true},
-  {id:"bizzy-pilot", name:"Bizzy Bear Aeroplane Pilot", sub:"Board book, Bizzy Bear", price:4500, cats:["0-2"], img:"img/BizzyBear_AeroplanePilot.png", tier:"", stock:true},
-  {id:"bizzy-building", name:"Bizzy Bear Building Site", sub:"Board book, Bizzy Bear", price:4500, cats:["0-2"], img:"img/BizzyBear_BuildingSite.png", tier:"", stock:false},
-  {id:"bizzy-racing", name:"Bizzy Bear Racing Driver", sub:"Board book, Bizzy Bear", price:4500, cats:["0-2"], img:"img/BizzyBear_RacingDriver.png", tier:"", stock:true},
-  {id:"bizzy-words", name:"Bizzy Bear's Big Book Of Words", sub:"Словарик, Bizzy Bear", price:5000, cats:["0-2","2-4"], img:"", tier:"", stock:false},
-  {id:"bizzy-football", name:"Bizzy Bear: Football Player", sub:"Board book, Bizzy Bear", price:4500, cats:["0-2"], img:"img/BizzyBear_FootballPlayer.png", tier:"", stock:false},
-  {id:"bizzy-pirate", name:"Bizzy Bear: Pirate Adventure!", sub:"Board book, Bizzy Bear", price:4500, cats:["0-2"], img:"img/BizzyBear_PirateAdventure.png", tier:"", stock:false},
-  {id:"bizzy-space", name:"Bizzy Bear: Space Rocket", sub:"Board book, Bizzy Bear", price:4500, cats:["0-2"], img:"img/BizzyBear_SpaceRocket.png", tier:"", stock:false},
-  {id:"bizzy-train", name:"Bizzy Bear: Train Driver", sub:"Board book, Bizzy Bear", price:4500, cats:["0-2"], img:"img/BizzyBear_TrainDriver.png", tier:"", stock:false},
-  {id:"bizzy-vets", name:"Bizzy Bear: Vets Clinic", sub:"Board book, Bizzy Bear", price:4500, cats:["0-2"], img:"img/BizzyBear_VetsClinic.png", tier:"", stock:true},
-  {id:"brown-bear", name:"Brown Bear", sub:"Классика, Eric Carle", price:4500, cats:["0-2"], img:"img/BrownBear.png", tier:"", stock:false},
-  {id:"busy-doctor", name:"Busy Day: Doctor", sub:"Книга с клапанами", price:8600, cats:["0-2","2-4"], img:"img/BusyDayDoctor.png", tier:"", stock:true},
-  {id:"busy-garden", name:"Busy Series Garden", sub:"Интерактивная книга", price:4600, cats:["0-2","2-4"], img:"img/BusySeriesGarden.png", tier:"", stock:true},
-  {id:"sticker-edu", name:"Children's early education sticker book", sub:"Книга с наклейками", price:2500, cats:["0-2","2-4","stickers"], img:"img/StickerBooksGroup.png", tier:"", stock:true},
-  {id:"dear-zoo", name:"Dear Zoo", sub:"Книга с клапанами", price:4200, cats:["0-2"], img:"img/DearZoo.png", tier:"", stock:false},
-  {id:"eng-junior", name:"English for Everyone Junior B", sub:"Учебник английского, DK", price:14000, cats:["4-6"], img:"", tier:"", stock:false},
-  {id:"guess-animals", name:"Guess who I am | Animals", sub:"Угадай животное, пазл", price:2500, cats:["2-4"], img:"", tier:"", stock:false},
-  {id:"guess-bugs", name:"Guess who I am | Bugs", sub:"Угадай жучка, пазл", price:2500, cats:["2-4"], img:"", tier:"", stock:false},
-  {id:"guess-fruits", name:"Guess who I am | Fruits", sub:"Угадай фрукт, пазл", price:2500, cats:["2-4"], img:"", tier:"", stock:false},
-  {id:"guess-sea", name:"Guess who I am | Sea animals", sub:"Угадай морского жителя, пазл", price:2500, cats:["2-4"], img:"", tier:"", stock:false},
-  {id:"guess-transport", name:"Guess who I am | Transport", sub:"Угадай транспорт, пазл", price:2500, cats:["2-4"], img:"", tier:"", stock:false},
-  {id:"hape-wooden", name:"Hape Wooden Whistle", sub:"Деревянная свистулька", price:2500, cats:["0-2","2-4"], img:"img/HapeWoodenWhistle.jpeg", tier:"", stock:true},
-  {id:"invisible", name:"Invisible Things", sub:"Книга о невидимом, Andy Glynne", price:13000, cats:["4-6"], img:"", tier:"", stock:false},
-  {id:"fc-animal", name:"Kids English Flash Cards Animal", sub:"Карточки — животные", price:2000, cats:["2-4","flash-cards"], img:"img/AnimalsFlashcard.jpg", tier:"", stock:true},
-  {id:"fc-body", name:"Kids English Flash Cards Body Parts", sub:"Карточки — части тела", price:2000, cats:["2-4","flash-cards"], img:"img/BodyPartsFlashcard.jpeg", tier:"", stock:false},
-  {id:"fc-color", name:"Kids English Flash Cards Color", sub:"Карточки — цвета", price:2000, cats:["2-4","flash-cards"], img:"img/ColourFlashcard.jpg", tier:"", stock:true},
-  {id:"fc-fruits", name:"Kids English Flash Cards Fruits", sub:"Карточки — фрукты", price:2000, cats:["2-4","flash-cards"], img:"img/FruitsFlashcard.jpg", tier:"", stock:true},
-  {id:"fc-shape", name:"Kids English Flash Cards Shape", sub:"Карточки — формы", price:2000, cats:["2-4","flash-cards"], img:"img/ShapesFlashcard.jpg", tier:"", stock:true},
-  {id:"fc-vegetables", name:"Kids English Flash Cards Vegetables", sub:"Карточки — овощи", price:2000, cats:["2-4","flash-cards"], img:"img/VegetablesFlashcard.jpeg", tier:"", stock:true},
-  {id:"peppa-hide", name:"Peppa Pig Hide-and-Seek", sub:"Книга с клапанами, Peppa", price:6900, cats:["2-4"], img:"img/PeppaPigHideandSeek.png", tier:"", stock:true},
-  {id:"peppa-friends", name:"Peppa Pig and Friends", sub:"Сборник историй, Peppa", price:10000, cats:["2-4"], img:"img/PeppaPigandFriends.jpeg", tier:"", stock:true},
-  {id:"see-touch", name:"See, Touch, Feel", sub:"Тактильная книга, Roger Priddy", price:11000, cats:["0-2"], img:"", tier:"", stock:false},
-  {id:"step-solar", name:"Step inside Science: Solar System", sub:"Энциклопедия, Usborne", price:10900, cats:["4-6"], img:"", tier:"", stock:false},
-  {id:"step-weather", name:"Step inside Science: Weather", sub:"Энциклопедия, Usborne", price:10900, cats:["4-6"], img:"", tier:"", stock:true},
-  {id:"step-body", name:"Step inside Science: Your Body", sub:"Энциклопедия, Usborne", price:10900, cats:["4-6"], img:"img/StepInsideScienceYourBody.png", tier:"", stock:true},
-  {id:"orch-swan", name:"Story Orchestra: Swan Lake", sub:"Музыкальная книга", price:15000, cats:["4-6"], img:"img/StoryOrchestraSwanLake.jpeg", tier:"", stock:true},
-  {id:"tangram-t", name:"T-shape Tangram", sub:"Деревянный танграм", price:9000, cats:["2-4","4-6"], img:"", tier:"", stock:true},
-  {id:"tangram-scenes", name:"Tangram Play Scenes", sub:"Танграм со сценками", price:9000, cats:["2-4","4-6"], img:"", tier:"", stock:false},
-  {id:"bedtime-animals", name:"The Bedtime Book of Animals", sub:"Книга на ночь, DK", price:13000, cats:["2-4","4-6"], img:"", tier:"", stock:false},
-  {id:"orch-play", name:"The Story Orchestra I Can Play", sub:"Музыкальная книга", price:15000, cats:["4-6"], img:"img/StoryOrchestraICanPlay.png", tier:"", stock:false},
-  {id:"orch-nutcracker", name:"The Story Orchestra: The Nutcracker", sub:"Музыкальная книга", price:15000, cats:["4-6"], img:"img/StoryOrchestraNutcracker.png", tier:"", stock:true},
-  {id:"vhc-magnet", name:"The Very Hungry Caterpillar Magnet Book", sub:"Магнитная книга, Eric Carle", price:10700, cats:["2-4"], img:"img/TheVeryHungryCaterpillarMagnetBook.png", tier:"", stock:false},
-  {id:"vhc-eat", name:"The Very Hungry Caterpillar Time to Eat! Magnet Book", sub:"Магнитная книга, Eric Carle", price:14500, cats:["2-4"], img:"img/TheVeryHungryCaterpillarTimetoEat.png", tier:"", stock:true},
-  {id:"there-kitten", name:"There There Little Kitten", sub:"Тактильная книга", price:12400, cats:["0-2"], img:"img/ThereThereLittleKitten.png", tier:"", stock:true},
-  {id:"usborne-sticker", name:"First English Words. Sticker book", sub:"Книга с наклейками", price:2000, cats:["2-4","stickers"], img:"img/StickerBookFirstEnglishWords.jpg", tier:"", stock:true},
-  {id:"vhc-abc", name:"VHC ABC Book", sub:"Алфавит, Eric Carle", price:8400, cats:["2-4"], img:"img/VeryHungryCaterpillarABCBook.png", tier:"", stock:true},
-  {id:"wheres-spot", name:"Where's Spot?", sub:"Книга с клапанами", price:6900, cats:["0-2"], img:"img/Where'sSpot.png", tier:"", stock:true},
+  {id:"1000-words", name:"1000 Useful Words", sub:{ru:"Словарь в картинках, DK",en:"Picture dictionary, DK",kz:"Суретті сөздік, DK"}, price:7000, cats:["2-4","4-6"], img:"", tier:"", stock:false},
+  {id:"all-maths", name:"ALL THE MATHS YOU NEED TO KNOW", sub:{ru:"Математика, DK",en:"Mathematics, DK",kz:"Математика, DK"}, price:9000, cats:["4-6"], img:"img/AllTheMaths.png", tier:"", stock:true},
+  {id:"bizzy-pilot", name:"Bizzy Bear Aeroplane Pilot", sub:{ru:"Board book, Bizzy Bear",en:"Board book, Bizzy Bear",kz:"Картон кітап, Bizzy Bear"}, price:4500, cats:["0-2"], img:"img/BizzyBear_AeroplanePilot.png", tier:"", stock:true},
+  {id:"bizzy-building", name:"Bizzy Bear Building Site", sub:{ru:"Board book, Bizzy Bear",en:"Board book, Bizzy Bear",kz:"Картон кітап, Bizzy Bear"}, price:4500, cats:["0-2"], img:"img/BizzyBear_BuildingSite.png", tier:"", stock:false},
+  {id:"bizzy-racing", name:"Bizzy Bear Racing Driver", sub:{ru:"Board book, Bizzy Bear",en:"Board book, Bizzy Bear",kz:"Картон кітап, Bizzy Bear"}, price:4500, cats:["0-2"], img:"img/BizzyBear_RacingDriver.png", tier:"", stock:true},
+  {id:"bizzy-words", name:"Bizzy Bear's Big Book Of Words", sub:{ru:"Словарик, Bizzy Bear",en:"Word book, Bizzy Bear",kz:"Сөздік кітап, Bizzy Bear"}, price:5000, cats:["0-2","2-4"], img:"", tier:"", stock:false},
+  {id:"bizzy-football", name:"Bizzy Bear: Football Player", sub:{ru:"Board book, Bizzy Bear",en:"Board book, Bizzy Bear",kz:"Картон кітап, Bizzy Bear"}, price:4500, cats:["0-2"], img:"img/BizzyBear_FootballPlayer.png", tier:"", stock:false},
+  {id:"bizzy-pirate", name:"Bizzy Bear: Pirate Adventure!", sub:{ru:"Board book, Bizzy Bear",en:"Board book, Bizzy Bear",kz:"Картон кітап, Bizzy Bear"}, price:4500, cats:["0-2"], img:"img/BizzyBear_PirateAdventure.png", tier:"", stock:false},
+  {id:"bizzy-space", name:"Bizzy Bear: Space Rocket", sub:{ru:"Board book, Bizzy Bear",en:"Board book, Bizzy Bear",kz:"Картон кітап, Bizzy Bear"}, price:4500, cats:["0-2"], img:"img/BizzyBear_SpaceRocket.png", tier:"", stock:false},
+  {id:"bizzy-train", name:"Bizzy Bear: Train Driver", sub:{ru:"Board book, Bizzy Bear",en:"Board book, Bizzy Bear",kz:"Картон кітап, Bizzy Bear"}, price:4500, cats:["0-2"], img:"img/BizzyBear_TrainDriver.png", tier:"", stock:false},
+  {id:"bizzy-vets", name:"Bizzy Bear: Vets Clinic", sub:{ru:"Board book, Bizzy Bear",en:"Board book, Bizzy Bear",kz:"Картон кітап, Bizzy Bear"}, price:4500, cats:["0-2"], img:"img/BizzyBear_VetsClinic.png", tier:"", stock:true},
+  {id:"brown-bear", name:"Brown Bear", sub:{ru:"Классика, Eric Carle",en:"Classic, Eric Carle",kz:"Классика, Eric Carle"}, price:4500, cats:["0-2"], img:"img/BrownBear.png", tier:"", stock:false},
+  {id:"busy-doctor", name:"Busy Day: Doctor", sub:{ru:"Книга с клапанами",en:"Lift-the-flap book",kz:"Қақпақшалы кітап"}, price:8600, cats:["0-2","2-4"], img:"img/BusyDayDoctor.png", tier:"", stock:true},
+  {id:"busy-garden", name:"Busy Series Garden", sub:{ru:"Интерактивная книга",en:"Interactive book",kz:"Интерактивті кітап"}, price:4600, cats:["0-2","2-4"], img:"img/BusySeriesGarden.png", tier:"", stock:true},
+  {id:"sticker-edu", name:"Children's early education sticker book", sub:{ru:"Книга с наклейками",en:"Sticker book",kz:"Жапсырмалы кітап"}, price:2500, cats:["0-2","2-4","stickers"], img:"img/StickerBooksGroup.png", tier:"", stock:true},
+  {id:"dear-zoo", name:"Dear Zoo", sub:{ru:"Книга с клапанами",en:"Lift-the-flap book",kz:"Қақпақшалы кітап"}, price:4200, cats:["0-2"], img:"img/DearZoo.png", tier:"", stock:false},
+  {id:"eng-junior", name:"English for Everyone Junior B", sub:{ru:"Учебник английского, DK",en:"English textbook, DK",kz:"Ағылшын оқулығы, DK"}, price:14000, cats:["4-6"], img:"", tier:"", stock:false},
+  {id:"guess-animals", name:"Guess who I am | Animals", sub:{ru:"Угадай животное, пазл",en:"Guess the animal, puzzle",kz:"Жануарды тап, пазл"}, price:2500, cats:["2-4"], img:"", tier:"", stock:false},
+  {id:"guess-bugs", name:"Guess who I am | Bugs", sub:{ru:"Угадай жучка, пазл",en:"Guess the bug, puzzle",kz:"Жәндікті тап, пазл"}, price:2500, cats:["2-4"], img:"", tier:"", stock:false},
+  {id:"guess-fruits", name:"Guess who I am | Fruits", sub:{ru:"Угадай фрукт, пазл",en:"Guess the fruit, puzzle",kz:"Жемісті тап, пазл"}, price:2500, cats:["2-4"], img:"", tier:"", stock:false},
+  {id:"guess-sea", name:"Guess who I am | Sea animals", sub:{ru:"Угадай морского жителя, пазл",en:"Guess the sea animal, puzzle",kz:"Теңіз жануарын тап, пазл"}, price:2500, cats:["2-4"], img:"", tier:"", stock:false},
+  {id:"guess-transport", name:"Guess who I am | Transport", sub:{ru:"Угадай транспорт, пазл",en:"Guess the transport, puzzle",kz:"Көлікті тап, пазл"}, price:2500, cats:["2-4"], img:"", tier:"", stock:false},
+  {id:"hape-wooden", name:"Hape Wooden Whistle", sub:{ru:"Деревянная свистулька",en:"Wooden whistle",kz:"Ағаш сырнай"}, price:2500, cats:["0-2","2-4"], img:"img/HapeWoodenWhistle.jpeg", tier:"", stock:true},
+  {id:"invisible", name:"Invisible Things", sub:{ru:"Книга о невидимом, Andy Glynne",en:"Book about invisible things, Andy Glynne",kz:"Көрінбейтін нәрселер, Andy Glynne"}, price:13000, cats:["4-6"], img:"", tier:"", stock:false},
+  {id:"fc-animal", name:"Kids English Flash Cards Animal", sub:{ru:"Карточки — животные",en:"Flash cards — animals",kz:"Карточкалар — жануарлар"}, price:2000, cats:["2-4","flash-cards"], img:"img/AnimalsFlashcard.jpg", tier:"", stock:true},
+  {id:"fc-body", name:"Kids English Flash Cards Body Parts", sub:{ru:"Карточки — части тела",en:"Flash cards — body parts",kz:"Карточкалар — дене мүшелері"}, price:2000, cats:["2-4","flash-cards"], img:"img/BodyPartsFlashcard.jpeg", tier:"", stock:false},
+  {id:"fc-color", name:"Kids English Flash Cards Color", sub:{ru:"Карточки — цвета",en:"Flash cards — colours",kz:"Карточкалар — түстер"}, price:2000, cats:["2-4","flash-cards"], img:"img/ColourFlashcard.jpg", tier:"", stock:true},
+  {id:"fc-fruits", name:"Kids English Flash Cards Fruits", sub:{ru:"Карточки — фрукты",en:"Flash cards — fruits",kz:"Карточкалар — жемістер"}, price:2000, cats:["2-4","flash-cards"], img:"img/FruitsFlashcard.jpg", tier:"", stock:true},
+  {id:"fc-shape", name:"Kids English Flash Cards Shape", sub:{ru:"Карточки — формы",en:"Flash cards — shapes",kz:"Карточкалар — пішіндер"}, price:2000, cats:["2-4","flash-cards"], img:"img/ShapesFlashcard.jpg", tier:"", stock:true},
+  {id:"fc-vegetables", name:"Kids English Flash Cards Vegetables", sub:{ru:"Карточки — овощи",en:"Flash cards — vegetables",kz:"Карточкалар — көкөністер"}, price:2000, cats:["2-4","flash-cards"], img:"img/VegetablesFlashcard.jpeg", tier:"", stock:true},
+  {id:"peppa-hide", name:"Peppa Pig Hide-and-Seek", sub:{ru:"Книга с клапанами, Peppa",en:"Lift-the-flap book, Peppa",kz:"Қақпақшалы кітап, Peppa"}, price:6900, cats:["2-4"], img:"img/PeppaPigHideandSeek.png", tier:"", stock:true},
+  {id:"peppa-friends", name:"Peppa Pig and Friends", sub:{ru:"Сборник историй, Peppa",en:"Story collection, Peppa",kz:"Әңгімелер жинағы, Peppa"}, price:10000, cats:["2-4"], img:"img/PeppaPigandFriends.jpeg", tier:"", stock:true},
+  {id:"see-touch", name:"See, Touch, Feel", sub:{ru:"Тактильная книга, Roger Priddy",en:"Touch & feel book, Roger Priddy",kz:"Сезімдік кітап, Roger Priddy"}, price:11000, cats:["0-2"], img:"", tier:"", stock:false},
+  {id:"step-solar", name:"Step inside Science: Solar System", sub:{ru:"Энциклопедия, Usborne",en:"Encyclopedia, Usborne",kz:"Энциклопедия, Usborne"}, price:10900, cats:["4-6"], img:"", tier:"", stock:false},
+  {id:"step-weather", name:"Step inside Science: Weather", sub:{ru:"Энциклопедия, Usborne",en:"Encyclopedia, Usborne",kz:"Энциклопедия, Usborne"}, price:10900, cats:["4-6"], img:"", tier:"", stock:true},
+  {id:"step-body", name:"Step inside Science: Your Body", sub:{ru:"Энциклопедия, Usborne",en:"Encyclopedia, Usborne",kz:"Энциклопедия, Usborne"}, price:10900, cats:["4-6"], img:"img/StepInsideScienceYourBody.png", tier:"", stock:true},
+  {id:"orch-swan", name:"Story Orchestra: Swan Lake", sub:{ru:"Музыкальная книга",en:"Musical book",kz:"Музыкалық кітап"}, price:15000, cats:["4-6"], img:"img/StoryOrchestraSwanLake.jpeg", tier:"", stock:true},
+  {id:"tangram-t", name:"T-shape Tangram", sub:{ru:"Деревянный танграм",en:"Wooden tangram",kz:"Ағаш танграм"}, price:9000, cats:["2-4","4-6"], img:"", tier:"", stock:true},
+  {id:"tangram-scenes", name:"Tangram Play Scenes", sub:{ru:"Танграм со сценками",en:"Tangram with scenes",kz:"Сахналы танграм"}, price:9000, cats:["2-4","4-6"], img:"", tier:"", stock:false},
+  {id:"bedtime-animals", name:"The Bedtime Book of Animals", sub:{ru:"Книга на ночь, DK",en:"Bedtime book, DK",kz:"Түнгі кітап, DK"}, price:13000, cats:["2-4","4-6"], img:"", tier:"", stock:false},
+  {id:"orch-play", name:"The Story Orchestra I Can Play", sub:{ru:"Музыкальная книга",en:"Musical book",kz:"Музыкалық кітап"}, price:15000, cats:["4-6"], img:"img/StoryOrchestraICanPlay.png", tier:"", stock:false},
+  {id:"orch-nutcracker", name:"The Story Orchestra: The Nutcracker", sub:{ru:"Музыкальная книга",en:"Musical book",kz:"Музыкалық кітап"}, price:15000, cats:["4-6"], img:"img/StoryOrchestraNutcracker.png", tier:"", stock:true},
+  {id:"vhc-magnet", name:"The Very Hungry Caterpillar Magnet Book", sub:{ru:"Магнитная книга, Eric Carle",en:"Magnet book, Eric Carle",kz:"Магнитті кітап, Eric Carle"}, price:10700, cats:["2-4"], img:"img/TheVeryHungryCaterpillarMagnetBook.png", tier:"", stock:false},
+  {id:"vhc-eat", name:"The Very Hungry Caterpillar Time to Eat! Magnet Book", sub:{ru:"Магнитная книга, Eric Carle",en:"Magnet book, Eric Carle",kz:"Магнитті кітап, Eric Carle"}, price:14500, cats:["2-4"], img:"img/TheVeryHungryCaterpillarTimetoEat.png", tier:"", stock:true},
+  {id:"there-kitten", name:"There There Little Kitten", sub:{ru:"Тактильная книга",en:"Touch & feel book",kz:"Сезімдік кітап"}, price:12400, cats:["0-2"], img:"img/ThereThereLittleKitten.png", tier:"", stock:true},
+  {id:"usborne-sticker", name:"First English Words. Sticker book", sub:{ru:"Книга с наклейками",en:"Sticker book",kz:"Жапсырмалы кітап"}, price:2000, cats:["2-4","stickers"], img:"img/StickerBookFirstEnglishWords.jpg", tier:"", stock:true},
+  {id:"vhc-abc", name:"VHC ABC Book", sub:{ru:"Алфавит, Eric Carle",en:"Alphabet, Eric Carle",kz:"Әліпби, Eric Carle"}, price:8400, cats:["2-4"], img:"img/VeryHungryCaterpillarABCBook.png", tier:"", stock:true},
+  {id:"wheres-spot", name:"Where's Spot?", sub:{ru:"Книга с клапанами",en:"Lift-the-flap book",kz:"Қақпақшалы кітап"}, price:6900, cats:["0-2"], img:"img/Where'sSpot.png", tier:"", stock:true},
 ];
 /* ============== КОНЕЦ РЕДАКТИРУЕМОГО БЛОКА ============== */
+
+const I18N = {
+  ru:{
+    tagline:'Английские книги, которые ребёнок <span>просит перечитать</span>',
+    search:'Поиск по названию...',
+    catalog:'каталог', favorites:'избранное', write:'написать',
+    toOrder:'под заказ', choice:'выбор', toFav:'В избранное',
+    emptyFav:'Пока пусто. Отмечайте книги сердечком.',
+    emptySearch:'Ничего не найдено.',
+    writeSelected:'Написать по выбранным',
+    sortDefault:'по умолчанию', sortAsc:'цена ↑', sortDesc:'цена ↓',
+    waOne: p=>`Здравствуйте! Интересует «${p.name}» (${tg(p.price)}). Подскажите по наличию и доставке?`,
+    waGeneral:'Здравствуйте! Хочу подобрать книги. Возраст ребёнка: ',
+    waBulk:(lines,total)=>`Здравствуйте! Хочу заказать из BookSprout:\n${lines}\n\nИтого: ${tg(total)}. Подскажите по наличию и доставке?`,
+    bookCount: n=>{const w=n%10===1&&n%100!==11?'книга':(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?'книги':'книг');return `${n} ${w}`},
+    title:'BookSprout — английские книги для детей',
+    desc:'Английские детские книги, которые ребёнок просит перечитать. Астана.',
+    srTitle:'BookSprout — английские детские книги, Астана',
+    htmlLang:'ru',
+  },
+  en:{
+    tagline:'English books your child will <span>ask to read again</span>',
+    search:'Search by title...',
+    catalog:'catalog', favorites:'favorites', write:'contact',
+    toOrder:'to order', choice:'pick', toFav:'Add to favorites',
+    emptyFav:'Nothing here yet. Tap the heart to save books.',
+    emptySearch:'Nothing found.',
+    writeSelected:'Message about selected',
+    sortDefault:'default', sortAsc:'price ↑', sortDesc:'price ↓',
+    waOne: p=>`Hello! I'm interested in "${p.name}" (${tg(p.price)}). Could you tell me about availability and delivery?`,
+    waGeneral:"Hello! I'd like to pick some books. Child's age: ",
+    waBulk:(lines,total)=>`Hello! I'd like to order from BookSprout:\n${lines}\n\nTotal: ${tg(total)}. Could you tell me about availability and delivery?`,
+    bookCount: n=>n===1?'1 book':`${n} books`,
+    title:'BookSprout — English books for kids',
+    desc:'English children\'s books your child will ask to read again. Astana.',
+    srTitle:'BookSprout — English children\'s books, Astana',
+    htmlLang:'en',
+  },
+  kz:{
+    tagline:'Бала қайта оқуды <span>сұрайтын</span> ағылшын кітаптары',
+    search:'Атауы бойынша іздеу...',
+    catalog:'каталог', favorites:'таңдаулы', write:'жазу',
+    toOrder:'тапсырыспен', choice:'таңдау', toFav:'Таңдаулыға',
+    emptyFav:'Әзірге бос. Кітаптарды жүрекшемен белгілеңіз.',
+    emptySearch:'Ештеңе табылмады.',
+    writeSelected:'Таңдалғандар бойынша жазу',
+    sortDefault:'әдепкі', sortAsc:'баға ↑', sortDesc:'баға ↓',
+    waOne: p=>`Сәлеметсіз бе! «${p.name}» (${tg(p.price)}) қызықтырады. Қолжетімділігі мен жеткізілімі туралы айтсаңыз?`,
+    waGeneral:'Сәлеметсіз бе! Кітап таңдағым келеді. Баланың жасы: ',
+    waBulk:(lines,total)=>`Сәлеметсіз бе! BookSprout-тан тапсырыс бергім келеді:\n${lines}\n\nБарлығы: ${tg(total)}. Қолжетімділігі мен жеткізілімі туралы айтсаңыз?`,
+    bookCount: n=>`${n} кітап`,
+    title:'BookSprout — балаларға арналған ағылшын кітаптары',
+    desc:'Бала қайта оқуды сұрайтын ағылшын балалар кітаптары. Астана.',
+    srTitle:'BookSprout — балалар ағылшын кітаптары, Астана',
+    htmlLang:'kz',
+  },
+};
 
 const tg = (n)=>new Intl.NumberFormat('ru-RU').format(Math.round(n))+" ₸";
 
@@ -213,13 +299,16 @@ const ICON = {
   heartFill:'<svg class="i" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6z"/></svg>',
   wa:'<svg class="i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm5.6 14c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.7-4-4.9-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.2-.2.5-.3.6-.3h.5c.2 0 .4 0 .6.5l.7 1.8c.1.1.1.3 0 .5l-.3.5-.3.3c-.1.1-.2.3-.1.5.1.2.6 1 1.4 1.7 1 .9 1.8 1.1 2 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.7.8c.2.1.4.2.4.3.1.1.1.5-.1 1z"/></svg>'
 };
-let view="all", filter="all";
+
+let lang = localStorage.getItem('bs_lang') || 'ru';
+let view = "all", filter = "all", sort = "default", query = "";
 let favs = JSON.parse(localStorage.getItem('bs_favs')||'[]');
 
+function t(key){ return I18N[lang][key]; }
+function sub(p){ return p.sub[lang] || p.sub.ru; }
+
 function waLink(p){
-  const msg = p
-    ? `Здравствуйте! Интересует «${p.name}» (${tg(p.price)}). Подскажите по наличию и доставке?`
-    : `Здравствуйте! Хочу подобрать книги. Возраст ребёнка: `;
+  const msg = p ? t('waOne')(p) : t('waGeneral');
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
 }
 
@@ -228,27 +317,55 @@ function waFavLink(){
   if(!chosen.length) return waLink();
   const lines = chosen.map(p=>`• ${p.name} — ${tg(p.price)}`).join('\n');
   const total = chosen.reduce((s,p)=>s+p.price,0);
-  const msg = `Здравствуйте! Хочу заказать из BookSprout:\n${lines}\n\nИтого: ${tg(total)}. Подскажите по наличию и доставке?`;
-  return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+  return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(t('waBulk')(lines,total))}`;
 }
 
-function renderFilters(){
-  document.getElementById('filters').innerHTML = CATEGORIES.map(c=>
-    `<button class="chip ${filter===c.key?'on':''}" data-f="${c.key}">${c.label}</button>`).join('');
+function applyLang(){
+  document.documentElement.lang = t('htmlLang');
+  document.title = t('title');
+  document.querySelector('meta[name="description"]').content = t('desc');
+  document.getElementById('sr-title').textContent = t('srTitle');
+  document.getElementById('tagline').innerHTML = t('tagline');
+  document.getElementById('searchInput').placeholder = t('search');
+  document.getElementById('favbar-btn-text').textContent = t('writeSelected');
+  document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=t(el.dataset.t)});
+  document.querySelectorAll('#langSw .lang-btn').forEach(b=>{
+    b.classList.toggle('on', b.dataset.lang===lang);
+  });
+}
+
+function renderToolbar(){
+  const cats = CATEGORIES.map(c=>
+    `<button class="chip ${filter===c.key?'on':''}" data-f="${c.key}">${c.label[lang]||c.label.ru}</button>`).join('');
+  const sorts = `<div class="sep"></div>`+
+    `<button class="chip ${sort==='default'?'on':''}" data-s="default">${t('sortDefault')}</button>`+
+    `<button class="chip ${sort==='asc'?'on':''}" data-s="asc">${t('sortAsc')}</button>`+
+    `<button class="chip ${sort==='desc'?'on':''}" data-s="desc">${t('sortDesc')}</button>`;
+  document.getElementById('toolbar').innerHTML = cats + sorts;
 }
 
 function visible(){
   let list = PRODUCTS;
   if(view==="fav") list = list.filter(p=>favs.includes(p.id));
   if(filter!=="all" && view!=="fav") list = list.filter(p=>p.cats.includes(filter));
-  function rank(p){ return p.stock ? (p.img ? 0 : 1) : 2; }
-  list = [...list].sort((a,b)=> rank(a) - rank(b));
+  if(query){
+    const q = query.toLowerCase();
+    list = list.filter(p=>p.name.toLowerCase().includes(q) || sub(p).toLowerCase().includes(q));
+  }
+  if(sort==="asc") list = [...list].sort((a,b)=>a.price-b.price);
+  else if(sort==="desc") list = [...list].sort((a,b)=>b.price-a.price);
+  else {
+    list = [...list].sort((a,b)=>{
+      const rank = p=> p.stock ? (p.img ? 0 : 1) : 2;
+      return rank(a) - rank(b);
+    });
+  }
   return list;
 }
 
 function card(p){
   const isFav = favs.includes(p.id);
-  const tierLabel = p.tier==="target" ? "выбор" : "";
+  const tierLabel = p.tier==="target" ? t('choice') : "";
   const photo = p.img
     ? `<img src="${p.img}" alt="${p.name}" loading="lazy">`
     : `<div class="ico">${ICON.book}</div>`;
@@ -256,17 +373,17 @@ function card(p){
     <div class="ph">
       ${photo}
       ${tierLabel?`<span class="tier">${tierLabel}</span>`:""}
-      ${p.stock?"":'<span class="tier" style="background:var(--ink)">под заказ</span>'}
-      <button class="fav ${isFav?'on':''}" data-fav="${p.id}" aria-label="В избранное">
+      ${p.stock?"":`<span class="tier" style="background:var(--ink)">${t('toOrder')}</span>`}
+      <button class="fav ${isFav?'on':''}" data-fav="${p.id}" aria-label="${t('toFav')}">
         ${isFav?ICON.heartFill:ICON.heart}</button>
     </div>
     <div class="body">
       <p class="nm">${p.name}</p>
-      <p class="sub">${p.sub}</p>
+      <p class="sub">${sub(p)}</p>
       <p class="pr">${tg(p.price)}</p>
       <div class="btns">
         <button class="wa" onclick="openLink('${waLink(p)}')">
-          ${ICON.wa}написать</button>
+          ${ICON.wa}${t('write')}</button>
       </div>
     </div></div>`;
 }
@@ -276,18 +393,17 @@ function render(){
   const g = document.getElementById('grid');
   g.innerHTML = list.length
     ? list.map(card).join('')
-    : `<div class="empty">${view==="fav"?"Пока пусто. Отмечайте книги сердечком.":"Ничего не найдено."}</div>`;
+    : `<div class="empty">${view==="fav"?t('emptyFav'):t('emptySearch')}</div>`;
   const fc = document.getElementById('favCount');
   if(favs.length){fc.style.display='flex';fc.textContent=favs.length;} else fc.style.display='none';
-  document.getElementById('filters').style.display = view==="fav" ? 'none' : 'flex';
+  document.getElementById('toolbar').style.display = view==="fav" ? 'none' : 'flex';
+  document.querySelector('.search-wrap').style.display = view==="fav" ? 'none' : 'block';
 
   const bar = document.getElementById('favbar');
   const chosen = PRODUCTS.filter(p=>favs.includes(p.id));
   if(view==="fav" && chosen.length){
     const total = chosen.reduce((s,p)=>s+p.price,0);
-    const n = chosen.length;
-    const word = n%10===1&&n%100!==11 ? "книга" : (n%10>=2&&n%10<=4&&(n%100<10||n%100>=20) ? "книги" : "книг");
-    document.getElementById('favbar-count').textContent = `${n} ${word}`;
+    document.getElementById('favbar-count').textContent = t('bookCount')(chosen.length);
     document.getElementById('favbar-total').textContent = tg(total);
     bar.classList.add('show');
   } else {
@@ -297,9 +413,11 @@ function render(){
 
 function openLink(url){ window.open(url,'_blank','noopener'); }
 
-document.getElementById('filters').addEventListener('click',e=>{
-  const b=e.target.closest('[data-f]'); if(!b)return;
-  filter=b.dataset.f; renderFilters(); render();
+document.getElementById('toolbar').addEventListener('click',e=>{
+  const fb=e.target.closest('[data-f]');
+  if(fb){ filter=fb.dataset.f; renderToolbar(); render(); return; }
+  const sb=e.target.closest('[data-s]');
+  if(sb){ sort=sb.dataset.s; renderToolbar(); render(); }
 });
 document.getElementById('grid').addEventListener('click',e=>{
   const b=e.target.closest('[data-fav]'); if(!b)return;
@@ -321,8 +439,18 @@ document.getElementById('favBtn').addEventListener('click',()=>{
   document.querySelector('nav a[data-view="fav"]').click();
 });
 document.getElementById('favbar-btn').addEventListener('click',()=>openLink(waFavLink()));
+document.getElementById('searchInput').addEventListener('input',e=>{
+  query = e.target.value.trim();
+  render();
+});
+document.getElementById('langSw').addEventListener('click',e=>{
+  const b = e.target.closest('[data-lang]'); if(!b) return;
+  lang = b.dataset.lang;
+  localStorage.setItem('bs_lang', lang);
+  applyLang(); renderToolbar(); render();
+});
 
-renderFilters(); render();
+applyLang(); renderToolbar(); render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));

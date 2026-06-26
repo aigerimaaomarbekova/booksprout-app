@@ -168,15 +168,30 @@ nav a .i{width:22px;height:22px;display:block;margin:0 auto 2px}
 */
 const WHATSAPP = "77005530007";
 
+/* GOOGLE SHEETS: вставь ID таблицы из URL (между /d/ и /edit)
+   Пример: https://docs.google.com/spreadsheets/d/ЭТОТ_ID/edit
+   Столбцы таблицы: id | name | sub_ru | sub_en | sub_kz | price | cats | img | stock
+   cats = теги через запятую (0-2,2-4,games)
+   img  = ссылка Google Drive (или пусто)
+   stock = TRUE / FALSE
+*/
+const SHEET_ID = "1lxH-K-ljqXpV9AOqrZfSg7NKQwM4v_dyA8Qj8VavdSI";
+
+/* GOOGLE DRIVE: URL скрипта, который отдаёт список фото из папки Drive */
+const DRIVE_SCRIPT = "https://script.google.com/macros/s/AKfycbxXrLlh5Dr7OI-qh5lIwzsHH_iuvcVmnUQDt0EwUQKAK-De9HJpbFmyRxSIFXYAxgtf/exec";
+
 /* КАТЕГОРИИ фильтров (key = тег товара, label = {ru,en,kz}) */
 const CATEGORIES = [
-  {key:"all",         label:{ru:"все",        en:"all",      kz:"барлығы"}},
-  {key:"0-2",         label:{ru:"0–2",        en:"0–2",      kz:"0–2"}},
-  {key:"2-4",         label:{ru:"2–4",        en:"2–4",      kz:"2–4"}},
-  {key:"4-6",         label:{ru:"4–6",        en:"4–6",      kz:"4–6"}},
-  {key:"stickers",    label:{ru:"наклейки",   en:"stickers", kz:"жапсырмалар"}},
-  {key:"flash-cards", label:{ru:"flash cards",en:"flash cards",kz:"flash cards"}},
-  {key:"games",       label:{ru:"игры",       en:"games",    kz:"ойындар"}},
+  {key:"all",         label:{ru:"все",          en:"all",        kz:"барлығы"}},
+  {key:"0-2",         label:{ru:"0–2",          en:"0–2",        kz:"0–2"}},
+  {key:"2-4",         label:{ru:"2–4",          en:"2–4",        kz:"2–4"}},
+  {key:"4-6",         label:{ru:"4–6",          en:"4–6",        kz:"4–6"}},
+  {key:"6+",          label:{ru:"6+",           en:"6+",         kz:"6+"}},
+  {key:"books",       label:{ru:"книги",        en:"books",      kz:"кітаптар"}},
+  {key:"toys",        label:{ru:"игрушки",      en:"toys",       kz:"ойыншықтар"}},
+  {key:"games",       label:{ru:"игры",         en:"games",      kz:"ойындар"}},
+  {key:"stickers",    label:{ru:"наклейки",     en:"stickers",   kz:"жапсырмалар"}},
+  {key:"flashcards",  label:{ru:"flash cards",  en:"flash cards",kz:"flash cards"}},
 ];
 
 /* ТОВАРЫ. Поля:
@@ -240,7 +255,7 @@ const I18N = {
     tagline:'Английские книги, которые ребёнок <span>просит перечитать</span>',
     search:'Поиск по названию...',
     catalog:'каталог', favorites:'избранное', write:'написать',
-    toOrder:'под заказ', choice:'выбор', toFav:'В избранное',
+    toOrder:'уже раскупили', choice:'выбор', toFav:'В избранное',
     emptyFav:'Пока пусто. Отмечайте книги сердечком.',
     emptySearch:'Ничего не найдено.',
     writeSelected:'Написать по выбранным',
@@ -258,7 +273,7 @@ const I18N = {
     tagline:'English books your child will <span>ask to read again</span>',
     search:'Search by title...',
     catalog:'catalog', favorites:'favorites', write:'contact',
-    toOrder:'to order', choice:'pick', toFav:'Add to favorites',
+    toOrder:'sold out', choice:'pick', toFav:'Add to favorites',
     emptyFav:'Nothing here yet. Tap the heart to save books.',
     emptySearch:'Nothing found.',
     writeSelected:'Message about selected',
@@ -276,7 +291,7 @@ const I18N = {
     tagline:'Бала қайта оқуды <span>сұрайтын</span> ағылшын кітаптары',
     search:'Атауы бойынша іздеу...',
     catalog:'каталог', favorites:'таңдаулы', write:'жазу',
-    toOrder:'тапсырыспен', choice:'таңдау', toFav:'Таңдаулыға',
+    toOrder:'таусылды', choice:'таңдау', toFav:'Таңдаулыға',
     emptyFav:'Әзірге бос. Кітаптарды жүрекшемен белгілеңіз.',
     emptySearch:'Ештеңе табылмады.',
     writeSelected:'Таңдалғандар бойынша жазу',
@@ -451,7 +466,52 @@ document.getElementById('langSw').addEventListener('click',e=>{
   applyLang(); renderToolbar(); render();
 });
 
+let driveMap = {};
+
+async function fetchDriveMap(){
+  if(!DRIVE_SCRIPT) return;
+  try{
+    const res = await fetch(DRIVE_SCRIPT);
+    driveMap = await res.json();
+  }catch(e){}
+}
+
+function resolveImg(val){
+  if(!val) return '';
+  if(val.startsWith('http')) return val;
+  if(driveMap[val]) return driveMap[val];
+  return val.startsWith('img/') ? val : `img/${val}`;
+}
+
+async function fetchSheet(){
+  if(!SHEET_ID) return;
+  try{
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+    const res = await fetch(url);
+    const txt = await res.text();
+    const json = JSON.parse(txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);?$/)[1]);
+    const cols = json.table.cols.map(c=>c.label.toLowerCase().trim());
+    const get = (row,name)=>{const i=cols.indexOf(name); return i>=0&&row.c[i]? String(row.c[i].v??''):''};
+    const items = json.table.rows.map(r=>({
+      id: get(r,'id'),
+      name: get(r,'name'),
+      sub:{ru:get(r,'sub_ru')||get(r,'name'), en:get(r,'sub_en')||get(r,'name'), kz:get(r,'sub_kz')||get(r,'name')},
+      price: Number(get(r,'price'))||0,
+      cats: get(r,'cats').split(',').map(s=>s.trim()).filter(Boolean),
+      img: resolveImg(get(r,'img')),
+      tier:'',
+      stock: /^(true|1|да)$/i.test(get(r,'stock')),
+    })).filter(p=>p.id&&p.name);
+    if(items.length){
+      PRODUCTS.length=0;
+      PRODUCTS.push(...items);
+      renderToolbar(); render();
+    }
+  }catch(e){}
+}
+
 applyLang(); renderToolbar(); render();
+fetchDriveMap().then(()=>fetchSheet());
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
